@@ -1,0 +1,460 @@
+/* The tool's own chrome.
+   Deliberately fixed and neutral: the palette under test must be judged against
+   a constant surround, not against itself. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --chrome-bg: #101114;
+  --chrome-panel: #17181c;
+  --chrome-raised: #1e2026;
+  --chrome-border: #2a2d35;
+  --chrome-text: #e6e7ea;
+  --chrome-muted: #8f949e;
+  --chrome-accent: #7aa2f7;
+  --chrome-good: #7ec699;
+  --chrome-bad: #f2777a;
+  --chrome-warn: #e0af68;
+  color-scheme: dark;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--chrome-bg);
+  color: var(--chrome-text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: 100vh;
+}
+
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- sidebar ---------- */
+
+.sidebar {
+  background: var(--chrome-panel);
+  border-right: 1px solid var(--chrome-border);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  overflow-y: auto;
+  max-height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    position: static;
+    max-height: none;
+  }
+}
+
+.brand h1 {
+  font-size: 16px;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+
+.brand p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--chrome-muted);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field > label,
+.field-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--chrome-muted);
+  font-weight: 600;
+}
+
+.seed-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.seed-row input[type="color"] {
+  inline-size: 46px;
+  block-size: 38px;
+  padding: 0;
+  border: 1px solid var(--chrome-border);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+}
+
+.text-input {
+  flex: 1;
+  min-inline-size: 0;
+  background: var(--chrome-raised);
+  border: 1px solid var(--chrome-border);
+  color: var(--chrome-text);
+  border-radius: 8px;
+  padding: 9px 11px;
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", monospace;
+  font-size: 13px;
+}
+
+.text-input:focus-visible,
+.seed-row input[type="color"]:focus-visible {
+  outline: 2px solid var(--chrome-accent);
+  outline-offset: 2px;
+}
+
+.character-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.character-btn {
+  text-align: left;
+  background: var(--chrome-raised);
+  border: 1px solid var(--chrome-border);
+  color: var(--chrome-text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.character-btn:hover {
+  border-color: #3b3f4a;
+}
+
+.character-btn[aria-pressed="true"] {
+  border-color: var(--chrome-accent);
+  background: #1b2436;
+}
+
+.character-desc {
+  font-size: 11px;
+  color: var(--chrome-muted);
+  min-block-size: 30px;
+}
+
+.segmented {
+  display: flex;
+  background: var(--chrome-raised);
+  border: 1px solid var(--chrome-border);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.segmented button {
+  flex: 1;
+  background: none;
+  border: 0;
+  color: var(--chrome-muted);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.segmented button[aria-pressed="true"] {
+  background: var(--chrome-bg);
+  color: var(--chrome-text);
+}
+
+.note {
+  font-size: 11px;
+  color: var(--chrome-muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.status {
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.status.pass {
+  color: var(--chrome-good);
+  border-color: #2c4a39;
+  background: #16241d;
+}
+
+.status.fail {
+  color: var(--chrome-bad);
+  border-color: #4d2b2d;
+  background: #251718;
+}
+
+.link-btn {
+  background: none;
+  border: 0;
+  color: var(--chrome-accent);
+  padding: 0;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ---------- main ---------- */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--chrome-border);
+  background: var(--chrome-panel);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  flex-wrap: wrap;
+}
+
+.tabs button {
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--chrome-muted);
+  padding: 13px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tabs button[aria-selected="true"] {
+  color: var(--chrome-text);
+  border-bottom-color: var(--chrome-accent);
+}
+
+.tab-body {
+  padding: 20px;
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.theme-toggle {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+/* ---------- swatches ---------- */
+
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.swatch {
+  border: 1px solid var(--chrome-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--chrome-panel);
+}
+
+.swatch-chips {
+  display: flex;
+  block-size: 54px;
+}
+
+.swatch-chips span {
+  flex: 1;
+}
+
+.swatch-meta {
+  padding: 8px 10px;
+}
+
+.swatch-meta code {
+  font-size: 11px;
+  color: var(--chrome-muted);
+  font-family: ui-monospace, monospace;
+}
+
+.swatch-name {
+  font-size: 12px;
+  font-weight: 600;
+  display: block;
+  margin-block-end: 3px;
+  word-break: break-all;
+}
+
+.override-row {
+  display: flex;
+  gap: 4px;
+  padding: 0 10px 10px;
+}
+
+.override-row input[type="color"] {
+  inline-size: 100%;
+  block-size: 26px;
+  padding: 0;
+  border: 1px solid var(--chrome-border);
+  border-radius: 5px;
+  background: none;
+}
+
+/* ---------- contrast table ---------- */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--chrome-border);
+  border-radius: 10px;
+}
+
+table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-inline-size: 620px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--chrome-border);
+  white-space: nowrap;
+}
+
+th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--chrome-muted);
+  background: var(--chrome-panel);
+  position: sticky;
+  top: 0;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.metric {
+  font-family: ui-monospace, monospace;
+}
+
+.metric.ok {
+  color: var(--chrome-good);
+}
+
+.metric.no {
+  color: var(--chrome-bad);
+}
+
+.pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--chrome-border);
+  color: var(--chrome-muted);
+}
+
+.pill.apca {
+  color: var(--chrome-accent);
+  border-color: #2e3d5c;
+}
+
+.pill.wcag {
+  color: var(--chrome-warn);
+  border-color: #4d3f26;
+}
+
+/* ---------- export ---------- */
+
+.export-head {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-block-end: 12px;
+}
+
+.export-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.export-tabs button {
+  background: var(--chrome-panel);
+  border: 1px solid var(--chrome-border);
+  color: var(--chrome-muted);
+  border-radius: 8px;
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.export-tabs button[aria-pressed="true"] {
+  color: var(--chrome-text);
+  border-color: var(--chrome-accent);
+}
+
+.copy-btn {
+  margin-inline-start: auto;
+  background: var(--chrome-accent);
+  color: #0b1220;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+pre.code {
+  background: var(--chrome-panel);
+  border: 1px solid var(--chrome-border);
+  border-radius: 10px;
+  padding: 14px;
+  overflow-x: auto;
+  font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0;
+  max-block-size: 62vh;
+}
