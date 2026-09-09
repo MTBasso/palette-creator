@@ -5,14 +5,22 @@ contrast-safe light/dark semantic token set out, judged in a live mock-UI previe
 exported as CSS custom properties, a Tailwind v4 theme, or a shadcn-compatible
 `globals.css`.
 
-> **Status: design phase. There is no application yet.** This repository currently holds
-> the design map and the research behind it. Nothing is deployable.
+**Live: https://mtbasso.github.io/palette-creator/**
 
 ## Why
 
 Picking colours by eye is a skill; assembling a *system* of them that holds its contrast
 in two themes is arithmetic. This tool does the arithmetic, so the only judgement left is
 whether you like the result — which you make by looking at a realistic UI, not at swatches.
+
+## How it works
+
+Pick a seed colour and a character. Every lightness in the palette is then *solved*
+against its actual backdrop rather than picked, so both themes clear their contrast
+floors by construction. Judge the result in the live preview, check the numbers on the
+Contrast tab, and copy one of four export formats.
+
+The URL carries the palette, so any link reproduces it.
 
 ## Design principles
 
@@ -24,8 +32,9 @@ These are settled decisions, not aspirations:
 - **Guided by default.** The controls cannot produce a palette that fails its contrast
   guarantees. An explicit unlock allows manual override, with diagnostics still on.
 - **Both themes at once.** Light and dark are generated together, never retro-fitted.
-- **A pure engine.** `src/palette` will have no React, no DOM, no clock, no `Math.random`,
-  so the colour maths is testable in a `for` loop and the UI is replaceable.
+- **A pure engine.** `src/palette` has no React, no DOM, no clock, no `Math.random`, so
+  the colour maths is testable in a `for` loop and the UI is replaceable. The guarantee
+  test runs 96 palettes through 3,456 pairings in under half a second.
 
 ## Where the design lives
 
@@ -34,6 +43,7 @@ These are settled decisions, not aspirations:
 | [`.scratch/palette-creator/map.md`](.scratch/palette-creator/map.md) | The map — destination, standing decisions, decisions so far, what is deliberately unspecified, what is out of scope |
 | [`.scratch/palette-creator/issues/`](.scratch/palette-creator/issues/) | Ten decision tickets, with answers appended as they resolve |
 | [`.scratch/palette-creator/research/`](.scratch/palette-creator/research/) | Long-form research with sources — colour space, contrast metrics, export formats |
+| [`.scratch/palette-creator/spec.md`](.scratch/palette-creator/spec.md) | The system as built — module shape, generation chain, invariants, maintenance obligations |
 | [`CONTEXT.md`](CONTEXT.md) | Glossary. Terms only, no implementation detail |
 
 `.scratch/` is normally throwaway; here it is the actual work product, so it is committed
@@ -51,6 +61,21 @@ deliberately.
   `:root`/`.dark` custom properties bridged by `@theme inline`.
 
 Each is written up in full, with sources, under `.scratch/palette-creator/research/`.
+
+Measured on the default palette, light mode binds 9 pairings on APCA and 9 on WCAG;
+dark mode binds 18 on APCA and 0 on WCAG. That split is the whole argument for
+enforcing both.
+
+## Development
+
+```sh
+npm install
+npm run dev        # http://localhost:5173
+npm test           # 32 tests over src/palette
+npm run typecheck
+```
+
+Pushing to `main` builds, typechecks, tests and deploys.
 
 ## What the guarantee actually is
 
